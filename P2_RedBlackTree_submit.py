@@ -192,6 +192,42 @@ class RedBlackTree:
         print(f"Current tree height: {self.height()}")
         return result
     
+    def delete(self, key):
+        """Delete a node with given key without RB fixup"""
+        # Find the node to delete
+        z = self._search_recursive(self.root, key)
+        if z == self.NIL:
+            print(f"Key {key} not found in tree")
+            return
+
+        # Case z has at most one child
+        if z.left == self.NIL or z.right == self.NIL:
+            y = z  # y will be removed
+        else:
+            # Case z has two children
+            y = self.successor(z)  # y will be removed
+        
+        if y.left != self.NIL:
+            x = y.left
+        else:
+            x = y.right
+
+
+        x.parent = y.parent
+
+        if y.parent == self.NIL:
+            self.root = x
+        elif y == y.parent.left:
+            y.parent.left = x
+        else:
+            y.parent.right = x
+
+        if y != z:
+            z.key = y.key
+
+        print(f"Deleted {key} from tree")
+        print(f"Current tree height after deletion: {self.height()}")
+    
 def print_tree(self, node=None, level=0, prefix="Root: "):
     """Print the tree structure"""
     if node is None:
@@ -231,6 +267,7 @@ def main():
     print("- successor x")
     print("- predecessor x")
     print("- exit (end program)")
+    print("- delete x")
     
     while True:
         command = input("\nEnter command: ").strip().lower()
@@ -271,6 +308,12 @@ def main():
                     print(f"No successor found for {num}")
             else:
                 print(f"Number {num} not found")
+        
+        elif command.startswith("delete "):
+            num = int(command.split()[1])
+            rbtree.delete(num)
+            print(f"Current tree structure:")
+            rbtree.print_tree()
                 
         elif command.startswith("predecessor "):
             num = int(command.split()[1])
